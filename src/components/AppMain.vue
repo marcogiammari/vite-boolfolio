@@ -18,9 +18,14 @@ export default {
         };
     },
     methods: {
-        getProjects() {
+        getProjectsPage(indexPage) {
+            let config = {
+                params: {
+                    page: indexPage
+                }
+            }
             this.loading = true;
-            axios.get(this.apiUrl + this.projectsApiPath)
+            axios.get(this.apiUrl + this.projectsApiPath, config)
                 .then((response) => {
                     this.projects = response.data.results.data;
                     this.loading = false;
@@ -33,59 +38,17 @@ export default {
                     this.loadingError = error.message;
                 });
         },
-        nextPage() {
-            if (this.projectsCurrentPage < this.projectsPages) {
-                let config = {
-                    params: {
-                        page: this.projectsCurrentPage + 1,
-                    },
-                };
-
-                axios.get(this.apiUrl + this.projectsApiPath, config)
-                    .then((response) => {
-                        this.projects = response.data.results.data;
-                        this.loading = false;
-                        this.projectsCurrentPage =
-                            response.data.results.current_page;
-                        this.projectsPages = response.data.results.last_page;
-                    }).catch((error) => {
-                        this.loading = false;
-                        this.loadingError = error.message;
-                    });
-            }
-        },
-        prevPage() {
-            if (this.projectsCurrentPage > 0) {
-                let config = {
-                    params: {
-                        page: this.projectsCurrentPage - 1,
-                    },
-                };
-
-                axios.get(this.apiUrl + this.projectsApiPath, config)
-                    .then((response) => {
-                        this.projects = response.data.results.data;
-                        this.loading = false;
-                        this.projectsCurrentPage =
-                            response.data.results.current_page;
-                        this.projectsPages = response.data.results.last_page;
-                    }).catch((error) => {
-                        this.loading = false;
-                        this.loadingError = error.message;
-                    });
-            }
-        },
     },
     mounted() {
-        this.getProjects();
+        this.getProjectsPage(1);
     },
 };
 </script>
 
 <template>
-    <main class="flex justify-center items-center flex-col gap-8 bg-inherit">
+    <main class="flex justify-center items-center flex-col gap-8 bg-inherit text-center">
         <div>
-            <h2 class="text-xl">My Projects</h2>
+            <h2 class="text-2xl">My Projects</h2>
             <hr />
             <h3 v-if="loading">Loading......</h3>
             <h3 v-if="loadingError">{{ loadingError }}</h3>
@@ -107,10 +70,12 @@ export default {
         <div class="flex gap-6">
             <button
                 class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]"
-                @click="prevPage(this.projectsCurrentPage - 1)" href="#">Previous Page</button>
+                @click="this.projectsCurrentPage > 0 && getProjectsPage(this.projectsCurrentPage - 1)" href="#">Previous
+                Page</button>
             <button
                 class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]"
-                @click="nextPage(this.projectsCurrentPage + 1)" href="#">Next Page</button>
+                @click="this.projectsCurrentPage < this.projectsPages && getProjectsPage(this.projectsCurrentPage + 1)"
+                href="#">Next Page</button>
         </div>
     </main>
 </template>
