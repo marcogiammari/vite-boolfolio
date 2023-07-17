@@ -18,16 +18,11 @@ export default {
         };
     },
     methods: {
-        getImagePath(imgPath) {
-            return new URL(imgPath, import.meta.url).href;
-        },
         getProjects() {
             this.loading = true;
-            axios
-                .get(this.apiUrl + this.projectsApiPath)
+            axios.get(this.apiUrl + this.projectsApiPath)
                 .then((response) => {
-                    this.projects = response.data.results;
-                    console.log(this.projects);
+                    this.projects = response.data.results.data;
                     this.loading = false;
                     this.projectsCurrentPage =
                         response.data.results.current_page;
@@ -38,33 +33,48 @@ export default {
                     this.loadingError = error.message;
                 });
         },
-        // changePage(newPage) {
-        //     if (
-        //         this.projectsCurrentPage < this.projectsPages &&
-        //         this.projectsCurrentPage > 0
-        //     ) {
-        //         let config = {
-        //             params: {
-        //                 page: newPage,
-        //             },
-        //         };
+        nextPage() {
+            if (this.projectsCurrentPage < this.projectsPages) {
+                let config = {
+                    params: {
+                        page: this.projectsCurrentPage + 1,
+                    },
+                };
 
-        //         axios
-        //             .get(this.apiUrl + this.projectsApiPath, config)
-        //             .then((response) => {
-        //                 this.projects = response.data.results;
-        //                 console.log(this.projects);
-        //                 this.loading = false;
-        //                 this.projectsCurrentPage =
-        //                     response.data.results.current_page;
-        //                 this.projectsPages = response.data.results.last_page;
-        //             })
-        //             .catch((error) => {
-        //                 this.loading = false;
-        //                 this.loadingError = error.message;
-        //             });
-        //     }
-        // },
+                axios.get(this.apiUrl + this.projectsApiPath, config)
+                    .then((response) => {
+                        this.projects = response.data.results.data;
+                        this.loading = false;
+                        this.projectsCurrentPage =
+                            response.data.results.current_page;
+                        this.projectsPages = response.data.results.last_page;
+                    }).catch((error) => {
+                        this.loading = false;
+                        this.loadingError = error.message;
+                    });
+            }
+        },
+        prevPage() {
+            if (this.projectsCurrentPage > 0) {
+                let config = {
+                    params: {
+                        page: this.projectsCurrentPage - 1,
+                    },
+                };
+
+                axios.get(this.apiUrl + this.projectsApiPath, config)
+                    .then((response) => {
+                        this.projects = response.data.results.data;
+                        this.loading = false;
+                        this.projectsCurrentPage =
+                            response.data.results.current_page;
+                        this.projectsPages = response.data.results.last_page;
+                    }).catch((error) => {
+                        this.loading = false;
+                        this.loadingError = error.message;
+                    });
+            }
+        },
     },
     mounted() {
         this.getProjects();
@@ -95,8 +105,12 @@ export default {
             </div>
         </div>
         <div class="flex gap-6">
-            <a @click="changePage(this.projectsCurrentPage - 1)" href="#">Previous Page</a>
-            <a @click="changePage(this.projectsCurrentPage + 1)" href="#">Next Page</a>
+            <button
+                class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]"
+                @click="prevPage(this.projectsCurrentPage - 1)" href="#">Previous Page</button>
+            <button
+                class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]"
+                @click="nextPage(this.projectsCurrentPage + 1)" href="#">Next Page</button>
         </div>
     </main>
 </template>
