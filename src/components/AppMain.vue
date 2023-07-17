@@ -1,7 +1,11 @@
 <script>
 import axios from "axios";
+import AppCard from "./AppCard.vue";
 export default {
     name: "AppMain",
+    components: {
+        AppCard
+    },
     data() {
         return {
             apiUrl: "http://localhost:8000/api/",
@@ -34,7 +38,33 @@ export default {
                     this.loadingError = error.message;
                 });
         },
+        // changePage(newPage) {
+        //     if (
+        //         this.projectsCurrentPage < this.projectsPages &&
+        //         this.projectsCurrentPage > 0
+        //     ) {
+        //         let config = {
+        //             params: {
+        //                 page: newPage,
+        //             },
+        //         };
 
+        //         axios
+        //             .get(this.apiUrl + this.projectsApiPath, config)
+        //             .then((response) => {
+        //                 this.projects = response.data.results;
+        //                 console.log(this.projects);
+        //                 this.loading = false;
+        //                 this.projectsCurrentPage =
+        //                     response.data.results.current_page;
+        //                 this.projectsPages = response.data.results.last_page;
+        //             })
+        //             .catch((error) => {
+        //                 this.loading = false;
+        //                 this.loadingError = error.message;
+        //             });
+        //     }
+        // },
     },
     mounted() {
         this.getProjects();
@@ -60,22 +90,14 @@ export default {
         <div class="container flex flex-wrap justify-center gap-8 items-stretch">
             <div class="w-1/5 border flex flex-col items-center justify-between gap-6 bg-white h-100 text-black rounded"
                 v-for="project in projects">
-                <div>
-                    <h4 class="text-xl p-3">{{ project.name }}</h4>
-                    <img class="w-100 h-80 object-cover" :src="'http://localhost:8000/storage/' + project.image" alt="" />
-                    <p v-if="project.type">{{ project.type.name }}</p>
-                </div>
-                <div class="flex justify-center items-center">
-                    <a :href="project.link"><button @click="" type="button"
-                            class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]">
-                            Visit Website
-                        </button></a>
-                </div>
 
+                <AppCard :project="project" />
             </div>
-
         </div>
-
+        <div class="flex gap-6">
+            <a @click="changePage(this.projectsCurrentPage - 1)" href="#">Previous Page</a>
+            <a @click="changePage(this.projectsCurrentPage + 1)" href="#">Next Page</a>
+        </div>
     </main>
 </template>
 
