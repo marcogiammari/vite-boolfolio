@@ -1,9 +1,10 @@
 <script>
-import AppMain from "./components/AppMain.vue";
+import AppHeader from "./components/AppHeader.vue";
 
 export default {
     components: {
-        AppMain,
+        AppHeader,
+
     },
 
     data() {
@@ -13,8 +14,9 @@ export default {
 </script>
 
 <template>
-    <h1 class="text-center text-3xl">Boolfolio</h1>
-    <AppMain />
+    <AppHeader />
+
+    <router-view></router-view>
 </template>
 
 <style scoped></style>
