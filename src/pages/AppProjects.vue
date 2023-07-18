@@ -1,8 +1,8 @@
 <script>
 import axios from "axios";
-import AppCard from "./AppCard.vue";
+import AppCard from "../components/AppCard.vue";
 export default {
-    name: "AppMain",
+    name: "AppProjects",
     components: {
         AppCard
     },
@@ -48,8 +48,7 @@ export default {
 <template>
     <main class="flex justify-center items-center flex-col gap-8 bg-inherit text-center">
         <div>
-            <hr />
-            <h2 class="text-2xl pb-8">My Projects</h2>
+            <h2 class="text-2xl py-4">My Projects</h2>
             <div class="h-12 flex justify-center">
                 <h3 v-if="loading">
 
@@ -77,7 +76,6 @@ export default {
         <div class="container flex flex-wrap justify-center gap-8 items-stretch">
             <div class="w-1/5 border flex flex-col items-center justify-between gap-6 bg-white h-100 text-black rounded"
                 v-for="project in projects">
-
                 <AppCard :project="project" />
             </div>
         </div>

@@ -1,6 +1,6 @@
 <script>
 export default {
-    name: "AppMain",
+    name: "AppCard",
     props: {
         project: Object
     },
