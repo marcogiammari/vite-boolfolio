@@ -1,6 +1,9 @@
 <script>
 import axios from "axios";
+import { store } from '../store';
+
 import AppCard from "../components/AppCard.vue";
+
 export default {
     name: "AppProjects",
     components: {
@@ -8,7 +11,7 @@ export default {
     },
     data() {
         return {
-            apiUrl: "http://localhost:8000/api/",
+            store,
             projectsApiPath: "projects",
             loading: false,
             loadingError: false,
@@ -25,7 +28,7 @@ export default {
                 }
             }
             this.loading = true;
-            axios.get(this.apiUrl + this.projectsApiPath, config)
+            axios.get(this.store.apiUrl + this.projectsApiPath, config)
                 .then((response) => {
                     this.projects = response.data.results.data;
                     this.loading = false;
@@ -36,6 +39,8 @@ export default {
                 .catch((error) => {
                     this.loading = false;
                     this.loadingError = error.message;
+
+                    this.$router.push({ name: "error", params: { code: '404' } })
                 });
         },
     },
@@ -46,7 +51,7 @@ export default {
 </script>
 
 <template>
-    <main class="flex justify-center items-center flex-col gap-8 bg-inherit text-center">
+    <main class="flex justify-center items-center flex-col gap-4 bg-inherit text-center">
         <div>
             <h2 class="text-2xl py-4">My Projects</h2>
             <div class="h-12 flex justify-center">
@@ -73,13 +78,13 @@ export default {
 
 
 
-        <div class="container flex flex-wrap justify-center gap-8 items-stretch">
+        <div class="container flex flex-wrap justify-center gap-12 items-stretch">
             <div class="w-1/5 border flex flex-col items-center justify-between gap-6 bg-white h-100 text-black rounded"
                 v-for="project in projects">
                 <AppCard :project="project" />
             </div>
         </div>
-        <h4 v-if="projectsPages > 0">
+        <h4 class="mt-8" v-if="projectsPages > 0">
             Page {{ projectsCurrentPage }} of {{ projectsPages }}
         </h4>
         <div class="flex gap-6">
