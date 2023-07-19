@@ -1,59 +1,44 @@
 <script>
 import axios from "axios";
-import { store } from '../store';
-
-import AppCard from "../components/AppCard.vue";
-
 export default {
     name: "AppProjects",
     components: {
-        AppCard
     },
     data() {
         return {
-            store,
-            projectsApiPath: "projects",
+            apiUrl: "http://127.0.0.1:8000/api/",
+            projectsApiPath: "projects/",
             loading: false,
             loadingError: false,
-            projects: [],
-            projectsCurrentPage: 0,
-            projectsPages: 0,
+            project: {},
         };
     },
     methods: {
-        getProjectsPage(indexPage) {
-            let config = {
-                params: {
-                    page: indexPage
-                }
-            }
+        getProject(id) {
             this.loading = true;
-            axios.get(this.store.apiUrl + this.projectsApiPath, config)
+            axios.get(this.apiUrl + this.projectsApiPath + id)
                 .then((response) => {
-                    this.projects = response.data.results.data;
+                    this.project = response.data.results;
                     this.loading = false;
-                    this.projectsCurrentPage =
-                        response.data.results.current_page;
-                    this.projectsPages = response.data.results.last_page;
+                    console.log(this.project);
                 })
                 .catch((error) => {
                     this.loading = false;
                     this.loadingError = error.message;
-
+                    console.log(error);
                     this.$router.push({ name: "error", params: { code: '404' } })
                 });
         },
     },
     mounted() {
-        this.getProjectsPage(1);
+        this.getProject(this.$route.params.id);
     },
 };
 </script>
 
 <template>
-    <main class="flex justify-center items-center flex-col gap-4 bg-inherit text-center pb-8">
+    <main class="flex justify-center items-center flex-col gap-8 bg-inherit text-center">
         <div>
-            <h2 class="text-2xl py-4">My Projects</h2>
             <div class="h-12 flex justify-center">
                 <h3 v-if="loading">
 
@@ -78,24 +63,19 @@ export default {
 
 
 
-        <div class="container flex flex-wrap justify-center gap-12 items-stretch">
-            <div class="lg:w-1/4 md:w-1/2 border flex flex-col items-center justify-between gap-4 bg-white h-100 text-black rounded"
-                v-for="project in projects">
-                <AppCard :project="project" />
+        <div class="container flex justify-center gap-8 items-stretch">
+            <div class="w-full border flex justify-center items-center mb-20 bg-white text-black rounded">
+                <div class="w-1/2">
+                    <img :src="'http://127.0.0.1:8000/storage/' + project.image" :alt="project.name">
+                </div>
+                <div class="w-1/2 text-center flex flex-col gap-1">
+                    <h3 class="text-2xl font-mono">{{ project.name }}</h3>
+                    <p><span v-for="stack in project.stacks" class="mx-1 italic">{{ stack.name }}</span></p>
+                    <p class="text-sm px-2">{{ project.description }}</p>
+                </div>
+
             </div>
-        </div>
-        <h4 class="mt-8" v-if="projectsPages > 0">
-            Page {{ projectsCurrentPage }} of {{ projectsPages }}
-        </h4>
-        <div class="flex gap-6">
-            <button v-show="this.projectsCurrentPage > 1"
-                class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]"
-                @click="this.projectsCurrentPage > 1 && getProjectsPage(this.projectsCurrentPage - 1)">Previous
-                Page</button>
-            <button v-show="this.projectsCurrentPage < this.projectsPages"
-                class="inline-block rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]"
-                @click="this.projectsCurrentPage < this.projectsPages && getProjectsPage(this.projectsCurrentPage + 1)">Next
-                Page</button>
+
         </div>
     </main>
 </template>
