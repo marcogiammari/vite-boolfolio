@@ -1,4 +1,5 @@
 <script>
+import { store } from '../store.js';
 import axios from "axios";
 export default {
     name: "AppProjects",
@@ -6,7 +7,7 @@ export default {
     },
     data() {
         return {
-            apiUrl: "http://127.0.0.1:8000/api/",
+            store,
             projectsApiPath: "projects/",
             loading: false,
             loadingError: false,
@@ -16,7 +17,7 @@ export default {
     methods: {
         getProject(id) {
             this.loading = true;
-            axios.get(this.apiUrl + this.projectsApiPath + id)
+            axios.get(this.store.apiUrl + this.projectsApiPath + id)
                 .then((response) => {
                     this.project = response.data.results;
                     this.loading = false;
@@ -33,11 +34,17 @@ export default {
     mounted() {
         this.getProject(this.$route.params.id);
     },
+    beforeRouteUpdate(to, from) {
+        console.log(to, from);
+        if (from.name == to.name) {
+            this.getProject(to.params.id)
+        }
+    }
 };
 </script>
 
 <template>
-    <main class="flex justify-center items-center flex-col gap-8 bg-inherit text-center">
+    <main class="flex justify-center items-center flex-col gap-8 bg-inherit text-center mb-20">
         <div>
             <div class="h-12 flex justify-center">
                 <h3 v-if="loading">
@@ -64,7 +71,7 @@ export default {
 
 
         <div class="container flex justify-center gap-8 items-stretch">
-            <div class="w-full border flex justify-center items-center mb-20 bg-white text-black rounded">
+            <div class="w-full border flex justify-center items-center bg-white text-black rounded">
                 <div class="w-1/2">
                     <img :src="'http://127.0.0.1:8000/storage/' + project.image" :alt="project.name">
                 </div>
@@ -73,8 +80,21 @@ export default {
                     <p><span v-for="stack in project.stacks" class="mx-1 italic">{{ stack.name }}</span></p>
                     <p class="text-sm px-2">{{ project.description }}</p>
                 </div>
-
             </div>
+        </div>
+        <div class="flex gap-2">
+            <router-link v-if="project.id > 1" :to="{
+                name: 'show-project', params: { id: project.id - 1 }
+            }"><button type="button"
+                    class="inline-block w-48 rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]">
+                    Previous
+                </button></router-link>
+            <router-link v-if="project.id < this.store.projectsTotal" :to="{
+                name: 'show-project', params: { id: project.id + 1 }
+            }"><button type="button"
+                    class="inline-block w-48 rounded bg-blue-500 px-6 pb-2 pt-2.5 my-3 text-xs font-medium uppercase text-white shadow-[0_4px_9px_-4px_#3b71ca]">
+                    Next
+                </button></router-link>
 
         </div>
     </main>

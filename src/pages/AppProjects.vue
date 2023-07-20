@@ -35,6 +35,7 @@ export default {
                     this.projectsCurrentPage =
                         response.data.results.current_page;
                     this.projectsPages = response.data.results.last_page;
+                    this.store.projectsTotal = response.data.results.total;
                 })
                 .catch((error) => {
                     this.loading = false;
