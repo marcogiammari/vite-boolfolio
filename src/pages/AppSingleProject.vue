@@ -21,12 +21,10 @@ export default {
                 .then((response) => {
                     this.project = response.data.results;
                     this.loading = false;
-                    console.log(this.project);
                 })
                 .catch((error) => {
                     this.loading = false;
                     this.loadingError = error.message;
-                    console.log(error);
                     this.$router.push({ name: "error", params: { code: '404' } })
                 });
         },

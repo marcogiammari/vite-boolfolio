@@ -13,12 +13,9 @@ export default {
                     name: 'projects'
                 },
                 {
-                    label: 'Error',
-                    name: 'error',
-                    params: {
-                        code: '404'
-                    }
-                }
+                    label: 'Contact Me',
+                    name: 'contact-me'
+                },
             ]
         };
     },
